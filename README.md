@@ -13,6 +13,7 @@ Installation:
 Install sxiv, dmenu and xwallpaper from your package manager
 
 Clone the repository to your .config directory and add Wall-d directory to your PATH. Bind Wall-d to a keybinding to make it easier to access. and make sure to put defaultwallpaper.sh in your autostart script (xinitrc for example).
+Change the DIR variable in Wall-d to point to your wallpapers directory (it will show all wallpapers in subdirectories too).
 
 Usage:
 
