@@ -28,7 +28,7 @@ Single(){
     SingleWallMenu="dmenu -i -l 5 -p "Options""
     SingleWallOptions=$(echo -e "zoom\ncenter\ntile\nstretch\nno-randr" | $SingleWallMenu)
 
-    xwallpaper --$SingleWallOptions $wall1  && sed -i "s|xwallpaper.*|xwallpaper  --$SingleWallOptions $wall1|" $HOME/.config/Wall-d/defaultwallpaper.sh
+    xwallpaper --$SingleWallOptions $wall1  && sed -i "s|xwallpaper.*|xwallpaper  --$SingleWallOptions $wall1|" $HOME/.config/Wall-d/defaultwallpaper.sh && wal -i $wall1 -n
 }
 
 # to set to diffrent wallpapers on each desktop
@@ -51,7 +51,7 @@ Dual() {
     SecondScreenMenu="dmenu -i -l 4 -p "Second_screen_options""
     SecondScreenOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $SecondScreenMenu)
 
-    xwallpaper --output $Monitor1 --$FirstScreenOptions $dwall1 --output $Monitor2 --$SecondScreenOptions $dwall2 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstScreenOptions $dwall1 --output $Monitor2 --$SecondScreenOptions $dwall2|" $HOME/.config/Wall-d/defaultwallpaper.sh
+    xwallpaper --output $Monitor1 --$FirstScreenOptions $dwall1 --output $Monitor2 --$SecondScreenOptions $dwall2 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstScreenOptions $dwall1 --output $Monitor2 --$SecondScreenOptions $dwall2|" $HOME/.config/Wall-d/defaultwallpaper.sh && wal -i $dwall1 -n
 }
 
 MENU="dmenu -l 2 -p "Mode?""
