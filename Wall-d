@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 
 #  __        ___    _     _          ____
@@ -8,11 +8,40 @@
 #     \_/\_/_/   \_\_____|_____|    |____/
 
 
-DIR="$HOME/Pictures/wallpapers/" # Path to wallpapers
+DIR="" # Path to wallpapers
 Monitor1=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==1) # Select the first monitor for dual mode
 Monitor2=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==2) # Select the second monitor for dual mode
 
-# to set same wallpaper on both desktops
+usage() {
+    echo "Wall-d: A simple and fast wallpaper manager for x"
+    echo ""
+    echo "Usage:"
+    echo "-h print this help message and exit"
+    echo "-d path/to/your/wallpapers"
+    echo "-r restore last set Wallpaper(s)"
+    echo ""
+}
+
+
+restore() {
+
+    defaultwallpaper.sh
+}
+
+
+while getopts :d:rh option; do
+    case "${option}" in
+        d) DIR=${OPTARG};;
+        r) restore && exit;;
+        h) usage && exit 0 ;;
+        *) usage && exit 0
+    esac
+done
+
+if [ -z "$DIR" ]; then
+    usage && exit 0
+fi
+
 Single(){
     walls=$(sxiv -t -o -r -b -g 500x500+500+200 $DIR | xargs)  # running sxiv in thumbnail mode.
     wall1=$(printf "%s" "$walls" | awk '{w = 1; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the last marked Wallpaper
@@ -28,13 +57,13 @@ Single(){
     SingleWallMenu="dmenu -i -l 5 -p "Options""
     SingleWallOptions=$(echo -e "zoom\ncenter\ntile\nstretch\nno-randr" | $SingleWallMenu)
 
-    xwallpaper --$SingleWallOptions $wall1  && sed -i "s|xwallpaper.*|xwallpaper  --$SingleWallOptions $wall1|" $HOME/.config/Wall-d/defaultwallpaper.sh
+    xwallpaper --$SingleWallOptions $wall1  && sed -i "s|xwallpaper.*|xwallpaper  --$SingleWallOptions $wall1|" $HOME/.local/bin/defaultwallpaper.sh
 }
 
 # to set to diffrent wallpapers on each desktop
 Dual() {
     dwalls=$(sxiv -t -o -r -b -g 500x500+500+200 $DIR | xargs)  # running sxiv in thimbnail mode.
-    dwallslast2=$(printf "%s" "dwalls" | awk '{w = 2; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the two last marked Wallpapers
+    dwallslast2=$(printf "%s" "$dwalls" | awk '{w = 2; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the two last marked Wallpapers
     dwall1=$(printf "%s" "$dwallslast2" | awk '{print $1}')  # Print the path to the before-last marked wallpaper
     dwall2=$(printf "%s" "$dwallslast2" | awk '{print $2}')  # Print the path to the last marked wallpaper
 
@@ -43,15 +72,15 @@ Dual() {
     then
       exit 0
     else
-      $FirstScreenMenu
+      $FirstMonitorMenu
     fi
 
-    FirstScreenMenu="dmenu -i -l 4 -p "First_screen_options""
-    FirstScreenOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $FirstScreenMenu)
-    SecondScreenMenu="dmenu -i -l 4 -p "Second_screen_options""
-    SecondScreenOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $SecondScreenMenu)
+    FirstMonitorMenu="dmenu -i -l 4 -p "First_screen_options""
+    FirstMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $FirstMonitorMenu)
+    SecondMonitorMenu="dmenu -i -l 4 -p "Second_screen_options""
+    SecondMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $SecondMonitorMenu)
 
-    xwallpaper --output $Monitor1 --$FirstScreenOptions $dwall1 --output $Monitor2 --$SecondScreenOptions $dwall2 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstScreenOptions $dwall1 --output $Monitor2 --$SecondScreenOptions $dwall2|" $HOME/.config/Wall-d/defaultwallpaper.sh
+    xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2|" $HOME/.local/bin/defaultwallpaper.sh
 }
 
 MENU="dmenu -l 2 -p "Mode?""

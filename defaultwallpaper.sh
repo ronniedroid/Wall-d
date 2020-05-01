@@ -1,3 +1,3 @@
 #!/bin/sh
 
-xwallpaper
+xwallpaper  --zoom /home/ron/Pictures/wallpapers/gregory-dalleau.jpg	
