@@ -29,7 +29,9 @@ cd Wall-d
 Usage:
 
 -h print this help message and exit
+
 -d path/to/your/wallpapers/directory
+
 -r restore last set Wallpaper(s)
 
 to use Wall-d you must define a wallpapers directory use the `-d` flag.
