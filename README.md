@@ -32,8 +32,11 @@ or just symlink Wall-d and defaultwallpaper.sh to your `$HOME/.local/bin/` direc
 Usage:
 
 -h print this help message and exit
+
 -d path/to/your/wallpapers/directory
+
 -r restore last set Wallpaper(s)
+
 -p Change colorscheme using pywal (Put wal -R in your autostart script to restore last set colorscheme)
 
 to use Wall-d you must define a wallpapers directory useing the `-d` flag.
