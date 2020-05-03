@@ -11,7 +11,7 @@
 DIR="" # Path to wallpapers
 Monitor1=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==1) # Select the first monitor for dual mode
 Monitor2=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==2) # Select the second monitor for dual mode
-
+WithPywall="false"
 usage() {
     echo "Wall-d: A simple and fast wallpaper manager for x"
     echo ""
@@ -19,6 +19,7 @@ usage() {
     echo "-h print this help message and exit"
     echo "-d path/to/your/wallpapers"
     echo "-r restore last set Wallpaper(s)"
+    echo "-p Change colorscheme using pywall"
     echo ""
 }
 
@@ -29,10 +30,11 @@ restore() {
 }
 
 
-while getopts :d:rh option; do
+while getopts :d:rhp option; do
     case "${option}" in
         d) DIR=${OPTARG};;
         r) restore && exit;;
+        p) WithPywall="True" ;;
         h) usage && exit 0 ;;
         *) usage && exit 0
     esac
@@ -58,6 +60,12 @@ Single(){
     SingleWallOptions=$(echo -e "zoom\ncenter\ntile\nstretch\nno-randr" | $SingleWallMenu)
 
     xwallpaper --$SingleWallOptions $wall1  && sed -i "s|xwallpaper.*|xwallpaper  --$SingleWallOptions $wall1|" $HOME/.local/bin/defaultwallpaper.sh
+
+    if [ "$WithPywall" == "False" ]; then
+        exit 0
+    elif [ "$WithPywall" == "True" ]; then
+        wal -i $wall1 -n
+    fi
 }
 
 # to set to diffrent wallpapers on each desktop
@@ -81,6 +89,12 @@ Dual() {
     SecondMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $SecondMonitorMenu)
 
     xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2|" $HOME/.local/bin/defaultwallpaper.sh
+
+    if [ "$WithPywall" == "False" ]; then
+        exit 0
+    elif [ "$WithPywall" == "True" ]; then
+        wal -i $dwall1 -n
+    fi
 }
 
 MENU="dmenu -l 2 -p "Mode?""

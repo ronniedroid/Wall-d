@@ -2,11 +2,12 @@
 A simple and fast wallpaper manager for x
 
 Features:
-- It supports single (same wall on all avilable screens) and dual (diffrent walls on each monitor) and can be easily extended to support more monitors.
+- It supports single (same wall on all available screens) and dual (different walls on each monitor) and can be easily extended to support more monitors.
 - Uses dmenu for selecting Mode (single or dual) and options (Zoom, Tile, Center, Stretch and no-randr).
 - Uses sxiv to preview the wallpapers in thumbnail mode.
 - uses xwallpaper to set the wallpaper.
 - sxiv window centers in the screen when in floating mode, and respects *.forgorund *.background and *.font settings from .Xresources.
+- pywal support
 
 Installation:
 
@@ -15,6 +16,7 @@ Install the depencencies:
 - sxiv
 - dmenu
 - xwallpaper
+- pywal (optional)
 
 Clone the repository
 ```shell
@@ -25,16 +27,16 @@ then cd into Wall-d then run install.sh
 cd Wall-d
 ./install.sh
 ```
+or just symlink Wall-d and defaultwallpaper.sh to your `$HOME/.local/bin/` directory and make sure that it is in your PATH.
 
 Usage:
 
 -h print this help message and exit
-
 -d path/to/your/wallpapers/directory
-
 -r restore last set Wallpaper(s)
+-p Change colorscheme using pywal (Put wal -R in your autostart script to restore last set colorscheme)
 
-to use Wall-d you must define a wallpapers directory use the `-d` flag.
+to use Wall-d you must define a wallpapers directory useing the `-d` flag.
 
 - Select a mode from dmenu and sxiv will open in thumbnail mode.
 - mark the wallpaper you want to set with with m, then press q to quit sxiv. (In single mode, the last marked wallpaper will be used. In dual mode, the last two marked wallpapers will be used. The before-last will be set on Monitor1 and the last will be set on Monitor2)
@@ -44,6 +46,7 @@ to restore your last set wallpaper(s) use the `-r` falg. put `Wall-d -r` in your
 
 sxiv usage:
 
+- hjkl to navigate.
 - Return: toggle between thumbnail and image mode.
 - m: to mark an picture in thumbnail mode.
 - b: show details bar about current picture.
