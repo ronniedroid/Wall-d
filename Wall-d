@@ -11,7 +11,8 @@
 DIR="" # Path to wallpapers
 Monitor1=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==1) # Select the first monitor for dual mode
 Monitor2=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==2) # Select the second monitor for dual mode
-WithPywall="false"
+WithPywall="False"
+
 usage() {
     echo "Wall-d: A simple and fast wallpaper manager for x"
     echo ""
