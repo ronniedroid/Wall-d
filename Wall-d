@@ -12,7 +12,7 @@ DIR="" # Path to wallpapers
 Monitor1=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==1) # Select the first monitor for dual mode
 Monitor2=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==2) # Select the second monitor for dual mode
 Monitor3=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==3) # Select the second monitor for dual mode
-MonitorStatus=$(xrandr --listactivemonitors | grep "+" | wc -l)
+NumOfMonitors=$(xrandr --listactivemonitors | grep "+" | wc -l)
 WithPywall="False"
 
 usage() {
@@ -28,10 +28,8 @@ usage() {
 
 
 restore() {
-
     defaultwallpaper.sh
 }
-
 
 while getopts :d:rhp option; do
     case "${option}" in
@@ -43,64 +41,51 @@ while getopts :d:rhp option; do
     esac
 done
 
-if [ -z "$DIR" ]; then
-    usage && exit 0
-fi
+[ -z "$DIR" ] && usage && exit 0
 
 Single(){
+
     walls=$(sxiv -t -o -r -b -g 500x500+500+200 $DIR | xargs)  # running sxiv in thumbnail mode.
     wall1=$(printf "%s" "$walls" | awk '{w = 1; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the last marked Wallpaper
 
     # if no picture is marked in sxiv, exit.
-    if [ -z "$walls" ]
-    then
-      exit 0
-    else
-      $SingleWallMenu
-    fi
+    [ -z "$walls" ] && exit 0
 
     SingleWallMenu="dmenu -i -l 5 -p "Options""
     SingleWallOptions=$(echo -e "zoom\ncenter\ntile\nstretch\nno-randr" | $SingleWallMenu)
 
+    [ -z "$SingleWallOptions" ] && exit 0
+
     xwallpaper --$SingleWallOptions $wall1  && sed -i "s|xwallpaper.*|xwallpaper  --$SingleWallOptions $wall1|" $HOME/.local/bin/defaultwallpaper.sh
 
-    if [ "$WithPywall" == "False" ]; then
-        exit 0
-    elif [ "$WithPywall" == "True" ]; then
-        wal -i $wall1 -n
-    fi
+    [ "$WithPywall" = "True" ] && wal -i $wall1 -n
 }
 
 # to set to diffrent wallpapers on each desktop
 Dual() {
+
     dwalls=$(sxiv -t -o -r -b -g 500x500+500+200 $DIR | xargs)  # running sxiv in thimbnail mode.
     dwallslast2=$(printf "%s" "$dwalls" | awk '{w = 2; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the two last marked Wallpapers
     dwall1=$(printf "%s" "$dwallslast2" | awk '{print $1}')  # Print the path to the before-last marked wallpaper
     dwall2=$(printf "%s" "$dwallslast2" | awk '{print $2}')  # Print the path to the last marked wallpaper
 
     # if no picture is marked in sxiv, exit.
-    if [ -z "$dwalls" ]
-    then
-      exit 0
-    else
-      $FirstMonitorMenu
-    fi
+    [ -z "$dwalls" ] && exit 0
 
     FirstMonitorMenu="dmenu -i -l 4 -p "First_screen_options""
     FirstMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $FirstMonitorMenu)
     SecondMonitorMenu="dmenu -i -l 4 -p "Second_screen_options""
     SecondMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $SecondMonitorMenu)
 
+    [ -z "$First_screen_options" ] || [ -z "$Second_screen_options" ] && exit 0
+
     xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2|" $HOME/.local/bin/defaultwallpaper.sh
 
-    if [ "$WithPywall" == "False" ]; then
-        exit 0
-    elif [ "$WithPywall" == "True" ]; then
-        wal -i $dwall1 -n
-    fi
+    [ "$WithPywall" = "True" ] && wal -i $dwall1 -n
 }
 
 Triple() {
+
     twalls=$(sxiv -t -o -r -b -g 500x500+500+200 $DIR | xargs)  # running sxiv in thimbnail mode.
     twallslast3=$(printf "%s" "$twalls" | awk '{w = 3; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the three last marked Wallpapers
     twall1=$(printf "%s" "$twallslast3" | awk '{print $1}')  # Print the path to the before-before-last marked wallpaper
@@ -108,12 +93,7 @@ Triple() {
     twall3=$(printf "%s" "$twallslast3" | awk '{print $3}')  # Print the path to the last marked wallpaper
 
     # if no picture is marked in sxiv, exit.
-    if [ -z "$twalls" ]
-    then
-      exit 0
-    else
-      $FirstMonitorMenu
-    fi
+    [ -z "$twalls" ] && exit 0
 
     FirstMonitorMenu="dmenu -i -l 4 -p "First_screen_options""
     FirstMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $FirstMonitorMenu)
@@ -122,16 +102,21 @@ Triple() {
     ThirdMonitorMenu="dmenu -i -l 4 -p "Third_screen_options""
     ThirdMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $ThirdMonitorMenu)
 
+    [ -z "$First_screen_options" ] || [ -z "$Second_screen_options" ] || [ -z "$Third_screen_options" ] && exit 0
+
     xwallpaper --output $Monitor1 --$FirstMonitorOptions $twall1 --output $Monitor2 --$SecondMonitorOptions $twall2 --output $Monitor3 --$Third_screen_options $twall3 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $twall1 --output $Monitor2 --$SecondMonitorOptions $twall2 --output $Monitor3 --$Third_screen_options $twall3 |" $HOME/.local/bin/defaultwallpaper.sh
+
+    [ "$WithPywall" = "True" ] && wal -i $twall2 -n
+
 }
 
 MENU="dmenu -l 2 -p "Mode?""
 
-if [ "$MonitorStatus" -eq 1 ]; then
-    MODE=$(echo -e "Single: Choose one Wallpaper" | $MENU)
-elif [ "MonitorStatus" -ge 2 ]; then
+if [ "$NumOfMonitors" -eq 1 ]; then
+    Single && exit 0
+elif [ "$NumOfMonitors" -ge 2 ]; then
     MODE=$(echo -e "Single: Choose one Wallpaper\nDual: Choose two Wallpapers" | $MENU)
-elif [ "MonitorStatus" -ge 3 ]; then
+elif [ "$NumOfMonitors" -ge 3 ]; then
     MODE=$(echo -e "Single: Choose One Wallpaper\nDual: Choose Two Wallpapers\nTriple: Choose Three Wallpapers" | $MENU)
 fi
 

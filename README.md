@@ -2,7 +2,7 @@
 A simple and fast wallpaper manager for x
 
 Features:
-- It supports single (same wall on all available screens) and dual (different walls on each monitor) and can be easily extended to support more monitors.
+- It supports single (same wall on all available screens), dual and triple (different walls on each monitor)
 - Uses dmenu for selecting Mode (single or dual) and options (Zoom, Tile, Center, Stretch and no-randr).
 - Uses sxiv to preview the wallpapers in thumbnail mode.
 - uses xwallpaper to set the wallpaper.
@@ -27,7 +27,7 @@ then cd into Wall-d then run install.sh
 cd Wall-d
 ./install.sh
 ```
-or just symlink Wall-d and defaultwallpaper.sh to your `$HOME/.local/bin/` directory and make sure that it is in your PATH.
+or just copy Wall-d and defaultwallpaper.sh to your `$HOME/.local/bin/` directory and make sure that it is in your PATH.
 
 Usage:
 
@@ -41,9 +41,9 @@ Usage:
 
 to use Wall-d you must define a wallpapers directory useing the `-d` flag.
 
-- Select a mode from dmenu and sxiv will open in thumbnail mode.
-- mark the wallpaper you want to set with with m, then press q to quit sxiv. (In single mode, the last marked wallpaper will be used. In dual mode, the last two marked wallpapers will be used. The before-last will be set on Monitor1 and the last will be set on Monitor2)
-- select a mode from dmenu. (you'll have to select a mode for each monitor in dual mode)
+- Select a mode from dmenu and sxiv will open in thumbnail mode. (in case you have only one monitor connected, you will not be prompt to select a mode and sxiv will open directly in single mode)
+- mark the wallpaper you want to set with with m, then press q to quit sxiv. (In single mode, the last marked wallpaper will be used. In dual mode, the last two marked wallpapers will be used. The before-last will be set on Monitor1 and the last will be set on Monitor2 and same with triple mode)
+- select am option from dmenu. (you'll have to select an option for each monitor in dual and triple mode)
 
 to restore your last set wallpaper(s) use the `-r` falg. put `Wall-d -r` in your autostart script
 

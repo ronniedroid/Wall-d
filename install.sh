@@ -6,13 +6,9 @@ state2=$(exa -1 "$OUTDIR" | grep -E "defaultwallpaper.sh")
 CurrentDIR=$(pwd)
 PCurrentDir=$(echo "$Current")
 
-if [ -z "$state1" && -z "$state2" ]; then
-    ln -s "$PCurrentDir"Wall-d "$OUTDIR"
-    ln -s "$PCurrentDir"defaultwallpaper.sh "$OUTDIR"
-else
-    rm "$OUTDIR"Wall-d && rm "$OUTDIR"defaultwallpaper.sh
-    ln -s "$PCurrentDir"Wall-d "$OUTDIR"
-    ln -s "$PCurrentDir"defaultwallpaper.sh "$OUTDIR"
-fi
+[ -n "$state1" ] || [ -n "$state2" ] && rm "$OUTDIR"Wall-d && rm "$OUTDIR"defaultwallpaper.sh
+
+cp "$PCurrentDir"Wall-d "$OUTDIR" ; cp "$PCurrentDir"defaultwallpaper.sh "$OUTDIR"
+
 
 
