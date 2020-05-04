@@ -3,7 +3,7 @@ A simple and fast wallpaper manager for x
 
 Features:
 - It supports single (same wall on all available screens), dual and triple (different walls on each monitor)
-- Uses dmenu for selecting Mode (single or dual) and options (Zoom, Tile, Center, Stretch and no-randr).
+- Uses dmenu for selecting Mode (single, dual or triple) and options (Zoom, Tile, Center, Stretch and no-randr).
 - Uses sxiv to preview the wallpapers in thumbnail mode.
 - uses xwallpaper to set the wallpaper.
 - sxiv window centers in the screen when in floating mode, and respects *.forgorund *.background and *.font settings from .Xresources.
