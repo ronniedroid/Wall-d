@@ -11,6 +11,8 @@
 DIR="" # Path to wallpapers
 Monitor1=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==1) # Select the first monitor for dual mode
 Monitor2=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==2) # Select the second monitor for dual mode
+Monitor3=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==3) # Select the second monitor for dual mode
+MonitorStatus=$(xrandr --listactivemonitors | grep "+" | wc -l)
 
 usage() {
     echo "Wall-d: A simple and fast wallpaper manager for x"
@@ -83,9 +85,43 @@ Dual() {
     xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2|" $HOME/.local/bin/defaultwallpaper.sh
 }
 
+Triple() {
+    twalls=$(sxiv -t -o -r -b -g 500x500+500+200 $DIR | xargs)  # running sxiv in thimbnail mode.
+    twallslast3=$(printf "%s" "$twalls" | awk '{w = 3; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the three last marked Wallpapers
+    twall1=$(printf "%s" "$twallslast3" | awk '{print $1}')  # Print the path to the before-before-last marked wallpaper
+    twall2=$(printf "%s" "$twallslast3" | awk '{print $2}')  # Print the path to the before-last marked wallpaper
+    twall3=$(printf "%s" "$twallslast3" | awk '{print $3}')  # Print the path to the last marked wallpaper
+
+    # if no picture is marked in sxiv, exit.
+    if [ -z "$twalls" ]
+    then
+      exit 0
+    else
+      $FirstMonitorMenu
+    fi
+
+    FirstMonitorMenu="dmenu -i -l 4 -p "First_screen_options""
+    FirstMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $FirstMonitorMenu)
+    SecondMonitorMenu="dmenu -i -l 4 -p "Second_screen_options""
+    SecondMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $SecondMonitorMenu)
+    ThirdMonitorMenu="dmenu -i -l 4 -p "Third_screen_options""
+    ThirdMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $ThirdMonitorMenu)
+
+    xwallpaper --output $Monitor1 --$FirstMonitorOptions $twall1 --output $Monitor2 --$SecondMonitorOptions $twall2 --output $Monitor3 --$Third_screen_options $twall3 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $twall1 --output $Monitor2 --$SecondMonitorOptions $twall2 --output $Monitor3 --$Third_screen_options $twall3 |" $HOME/.local/bin/defaultwallpaper.sh
+}
+
 MENU="dmenu -l 2 -p "Mode?""
-MODE=$(echo -e "Single: Choose one Wallpaper\nDual: Choose two Wallpapers" | $MENU)
+
+if [ "$MonitorStatus" -eq 1 ]; then
+    MODE=$(echo -e "Single: Choose one Wallpaper" | $MENU)
+elif [ "MonitorStatus" -ge 2 ]; then
+    MODE=$(echo -e "Single: Choose one Wallpaper\nDual: Choose two Wallpapers" | $MENU)
+elif [ "MonitorStatus" -ge 3 ]; then
+    MODE=$(echo -e "Single: Choose One Wallpaper\nDual: Choose Two Wallpapers\nTriple: Choose Three Wallpapers" | $MENU)
+fi
+
   case "$MODE" in
     Single*) Single ;;
-    Dual*) Dual
+    Dual*) Dual ;;
+    Triple*) Triple
   esac
