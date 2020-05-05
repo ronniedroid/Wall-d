@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
 
 #  __        ___    _     _          ____
@@ -9,9 +9,14 @@
 
 
 DIR="" # Path to wallpapers
+
 Monitor1=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==1) # Select the first monitor for dual mode
+Resolution1=$(xrandr --listactivemonitors | grep $Monitor1 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
 Monitor2=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==2) # Select the second monitor for dual mode
+Resolution2=$(xrandr --listactivemonitors | grep $Monitor2 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
 Monitor3=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==3) # Select the second monitor for dual mode
+Resolution3=$(xrandr --listactivemonitors | grep $Monitor3 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
+
 NumOfMonitors=$(xrandr --listactivemonitors | grep "+" | wc -l)
 WithPywall="False"
 WithBetterlockscreen="False"
@@ -63,7 +68,7 @@ Single(){
 
     [ "$WithPywall" = "True" ] && wal -i $wall1 -n
 
-    [ "$WithBetterlockscreen" = "True" ] && betterlockscreen -u $wall1 -r 1920x1080
+    [ "$WithBetterlockscreen" = "True" ] && betterlockscreen -u $wall1 -r $Resolution1
 }
 
 # to set to diffrent wallpapers on each desktop
@@ -87,6 +92,8 @@ Dual() {
     xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2|" $HOME/.local/bin/defaultwallpaper.sh
 
     [ "$WithPywall" = "True" ] && wal -i $dwall1 -n
+
+    [ "$WithBetterlockscreen" = "True" ] && betterlockscreen -u $dwall1 -r $Resolution1
 }
 
 Triple() {
@@ -113,6 +120,7 @@ Triple() {
 
     [ "$WithPywall" = "True" ] && wal -i $twall2 -n
 
+    [ "$WithBetterlockscreen" = "True" ] && betterlockscreen -u $twall2 -r $Resolution2
 }
 
 MENU="dmenu -l 2 -p "Mode?""
