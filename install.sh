@@ -1,8 +1,8 @@
 #!/bin/bash
 
 OUTDIR="$HOME/.local/bin/"
-state1=$(exa -1 "$OUTDIR" | grep -E "Wall-d")
-state2=$(exa -1 "$OUTDIR" | grep -E "defaultwallpaper.sh")
+state1=$(ls -1 "$OUTDIR" | grep -E "Wall-d")
+state2=$(ls -1 "$OUTDIR" | grep -E "defaultwallpaper.sh")
 CurrentDIR=$(pwd)
 PCurrentDir=$(echo "$Current")
 
