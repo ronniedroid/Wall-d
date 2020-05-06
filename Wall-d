@@ -28,6 +28,12 @@ location=$(echo 500x500+$xl+$yl)
 WithPywall="False"
 WithBetterlockscreen="False"
 
+source ~/.cache/wal/colors.sh
+colorOptions="-nb $color0 -nf $color15 -sb $color1 -sf $color15"
+
+startMessage="Apply wallpaper to lockscreen"
+finishMessage="Finished applying wallpaper to lockscreen"
+
 # function to reset the last set wallpaper(s)
 restore() {
     defaultwallpaper.sh
@@ -67,7 +73,7 @@ Single(){
     # if no picture is marked in sxiv, exit.
     [ -z "$walls" ] && exit 0
 
-    SingleWallMenu="dmenu -i -l 5 -p "Options""
+    SingleWallMenu="dmenu $colorOptions -i -l 5 -p "Options""
     SingleWallOptions=$(echo -e "zoom\ncenter\ntile\nstretch\nno-randr" | $SingleWallMenu)
 
     [ -z "$SingleWallOptions" ] && exit 0
@@ -76,7 +82,11 @@ Single(){
 
     [ "$WithPywall" = "True" ] && wal -i $wall1 -n
 
-    [ "$WithBetterlockscreen" = "True" ] && betterlockscreen -u $wall1 -r $Resolution1
+    if [ "$WithBetterlockscreen" = "True" ]; then
+        dunstify "Wall-d" "$startMessage"
+        betterlockscreen -u $wall1 -r $Resolution1
+        dunstify "Wall-d" "$finishMessage"
+    fi
 }
 
 # to set to diffrent wallpapers on each desktop
@@ -90,18 +100,22 @@ Dual() {
     # if no picture is marked in sxiv, exit.
     [ -z "$dwalls" ] && exit 0
 
-    FirstMonitorMenu="dmenu -i -l 4 -p "First_screen_options""
+    FirstMonitorMenu="dmenu $colorOptions -i -l 4 -p "First_screen_options""
     FirstMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $FirstMonitorMenu)
-    SecondMonitorMenu="dmenu -i -l 4 -p "Second_screen_options""
+    SecondMonitorMenu="dmenu $colorOptions -i -l 4 -p "Second_screen_options""
     SecondMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $SecondMonitorMenu)
 
     [ -z "$FirstMonitorOptions" ] || [ -z "$SecondMonitorOptions" ] && exit 0
 
     xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2|" $HOME/.local/bin/defaultwallpaper.sh
 
-    [ "$WithPywall" = "True" ] && wal -i $dwall1 -n
+    [ "$WithPywall" = "True" ] wal -i $dwall1 -n
 
-    [ "$WithBetterlockscreen" = "True" ] && betterlockscreen -u $dwall1 -r $Resolution1
+    if [ "$WithBetterlockscreen" = "True" ]; then
+        dunstify "Wall-d" "$startMessage"
+        betterlockscreen -u $dwall1 -r $Resolution1
+        dunstify "Wall-d" "$finishMessage"
+    fi
 }
 
 Triple() {
@@ -115,11 +129,11 @@ Triple() {
     # if no picture is marked in sxiv, exit.
     [ -z "$twalls" ] && exit 0
 
-    FirstMonitorMenu="dmenu -i -l 4 -p "First_screen_options""
+    FirstMonitorMenu="dmenu $colorOptions -i -l 4 -p "First_screen_options""
     FirstMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $FirstMonitorMenu)
-    SecondMonitorMenu="dmenu -i -l 4 -p "Second_screen_options""
+    SecondMonitorMenu="dmenu $colorOptions -i -l 4 -p "Second_screen_options""
     SecondMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $SecondMonitorMenu)
-    ThirdMonitorMenu="dmenu -i -l 4 -p "Third_screen_options""
+    ThirdMonitorMenu="dmenu $colorOptions -i -l 4 -p "Third_screen_options""
     ThirdMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $ThirdMonitorMenu)
 
     [ -z "$FirstMonitorOptions" ] || [ -z "$SecondMonitorOptions" ] || [ -z "$ThirdMonitorOptions" ] && exit 0
@@ -128,10 +142,14 @@ Triple() {
 
     [ "$WithPywall" = "True" ] && wal -i $twall2 -n
 
-    [ "$WithBetterlockscreen" = "True" ] && betterlockscreen -u $twall2 -r $Resolution2
+    if [ "$WithBetterlockscreen" = "True" ]; then
+        dunstify "Wall-d" "$startMessage"
+        betterlockscreen -u $twall2 -r $Resolution2
+        dunstify "Wall-d" "$finishMessage"
+    fi
 }
 
-MENU="dmenu -l 3 -p "Mode?""
+MENU="dmenu $colorOptions -l 3 -p "Mode?""
 
 if [ "$NumOfMonitors" -eq 1 ]; then
     Single && exit 0
