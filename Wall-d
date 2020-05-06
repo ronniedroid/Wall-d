@@ -11,10 +11,23 @@
 DIR="" # Path to wallpapers
 Monitor1=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==1) # Select the first monitor for dual mode
 Monitor2=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==2) # Select the second monitor for dual mode
-Monitor3=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==3) # Select the second monitor for dual mode
-NumOfMonitors=$(xrandr --listactivemonitors | grep "+" | wc -l)
+Monitor3=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==3) # Select the third monitor for triple mode
+NumOfMonitors=$(xrandr --listactivemonitors | grep "+" | wc -l) # get number of monitors
+# get screen resulotion to calculate the center
+x=$(xrandr | grep "*" | sed 's/x/ /g' | awk -F " " '{print $1}' | sed 's/\ //g')
+y=$(xrandr | grep "*" | sed 's/x/ /g' | awk -F " " '{print $2}' | sed 's/\ //g')
+xl=$(echo "($x-500)/2" | bc)
+yl=$(echo "($y-500)/2" | bc)
+location=$(echo 500x500+$xl+$yl)
+# will be set to true when using -p flag to activate pywal
 WithPywall="False"
 
+# function to reset the last set wallpaper(s)
+restore() {
+    defaultwallpaper.sh
+}
+
+# help message
 usage() {
     echo "Wall-d: A simple and fast wallpaper manager for x"
     echo ""
@@ -24,11 +37,6 @@ usage() {
     echo "-r restore last set Wallpaper(s)"
     echo "-p Change colorscheme using pywall"
     echo ""
-}
-
-
-restore() {
-    defaultwallpaper.sh
 }
 
 while getopts :d:rhp option; do
@@ -41,11 +49,11 @@ while getopts :d:rhp option; do
     esac
 done
 
-[ -z "$DIR" ] && usage && exit 0
+[ -z "$DIR" ] && usage && exit 0 # if no directory is set, print help message and exit
 
 Single(){
 
-    walls=$(sxiv -t -o -r -b -g 500x500+500+200 $DIR | xargs)  # running sxiv in thumbnail mode.
+    walls=$(sxiv -t -o -r -b -g $location $DIR | xargs)  # running sxiv in thumbnail mode.
     wall1=$(printf "%s" "$walls" | awk '{w = 1; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the last marked Wallpaper
 
     # if no picture is marked in sxiv, exit.
@@ -64,7 +72,7 @@ Single(){
 # to set to diffrent wallpapers on each desktop
 Dual() {
 
-    dwalls=$(sxiv -t -o -r -b -g 500x500+500+200 $DIR | xargs)  # running sxiv in thimbnail mode.
+    dwalls=$(sxiv -t -o -r -b -g $location $DIR | xargs)  # running sxiv in thimbnail mode.
     dwallslast2=$(printf "%s" "$dwalls" | awk '{w = 2; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the two last marked Wallpapers
     dwall1=$(printf "%s" "$dwallslast2" | awk '{print $1}')  # Print the path to the before-last marked wallpaper
     dwall2=$(printf "%s" "$dwallslast2" | awk '{print $2}')  # Print the path to the last marked wallpaper
@@ -86,7 +94,7 @@ Dual() {
 
 Triple() {
 
-    twalls=$(sxiv -t -o -r -b -g 500x500+500+200 $DIR | xargs)  # running sxiv in thimbnail mode.
+    twalls=$(sxiv -t -o -r -b -g $location $DIR | xargs)  # running sxiv in thimbnail mode.
     twallslast3=$(printf "%s" "$twalls" | awk '{w = 3; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the three last marked Wallpapers
     twall1=$(printf "%s" "$twallslast3" | awk '{print $1}')  # Print the path to the before-before-last marked wallpaper
     twall2=$(printf "%s" "$twallslast3" | awk '{print $2}')  # Print the path to the before-last marked wallpaper
