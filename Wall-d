@@ -11,11 +11,11 @@
 DIR="" # Path to wallpapers
 
 Monitor1=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==1) # Select the first monitor for dual mode
-Resolution1=$(xrandr --listactivemonitors | grep $Monitor1 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
+[ ! -z $Monitor1 ] && Resolution1=$(xrandr --listactivemonitors | grep $Monitor1 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
 Monitor2=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==2) # Select the second monitor for dual mode
-Resolution2=$(xrandr --listactivemonitors | grep $Monitor2 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
+[ ! -z $Monitor2 ] && Resolution2=$(xrandr --listactivemonitors | grep $Monitor2 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
 Monitor3=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==3) # Select the second monitor for dual mode
-Resolution3=$(xrandr --listactivemonitors | grep $Monitor3 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
+[ ! -z $Monitor3 ] && Resolution3=$(xrandr --listactivemonitors | grep $Monitor3 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
 
 NumOfMonitors=$(xrandr --listactivemonitors | grep "+" | wc -l)
 WithPywall="False"
@@ -87,7 +87,7 @@ Dual() {
     SecondMonitorMenu="dmenu -i -l 4 -p "Second_screen_options""
     SecondMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $SecondMonitorMenu)
 
-    [ -z "$First_screen_options" ] || [ -z "$Second_screen_options" ] && exit 0
+    [ -z "$FirstMonitorOptions" ] || [ -z "$SecondMonitorOptions" ] && exit 0
 
     xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2|" $HOME/.local/bin/defaultwallpaper.sh
 
@@ -114,20 +114,20 @@ Triple() {
     ThirdMonitorMenu="dmenu -i -l 4 -p "Third_screen_options""
     ThirdMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $ThirdMonitorMenu)
 
-    [ -z "$First_screen_options" ] || [ -z "$Second_screen_options" ] || [ -z "$Third_screen_options" ] && exit 0
+    [ -z "$FirstMonitorOptions" ] || [ -z "$SecondMonitorOptions" ] || [ -z "$ThirdMonitorOptions" ] && exit 0
 
-    xwallpaper --output $Monitor1 --$FirstMonitorOptions $twall1 --output $Monitor2 --$SecondMonitorOptions $twall2 --output $Monitor3 --$Third_screen_options $twall3 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $twall1 --output $Monitor2 --$SecondMonitorOptions $twall2 --output $Monitor3 --$Third_screen_options $twall3 |" $HOME/.local/bin/defaultwallpaper.sh
+    xwallpaper --output $Monitor1 --$FirstMonitorOptions $twall1 --output $Monitor2 --$SecondMonitorOptions $twall2 --output $Monitor3 --$ThirdMonitorOptions $twall3 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $twall1 --output $Monitor2 --$SecondMonitorOptions $twall2 --output $Monitor3 --$ThirdMonitorOptions $twall3 |" $HOME/.local/bin/defaultwallpaper.sh
 
     [ "$WithPywall" = "True" ] && wal -i $twall2 -n
 
     [ "$WithBetterlockscreen" = "True" ] && betterlockscreen -u $twall2 -r $Resolution2
 }
 
-MENU="dmenu -l 2 -p "Mode?""
+MENU="dmenu -l 3 -p "Mode?""
 
 if [ "$NumOfMonitors" -eq 1 ]; then
     Single && exit 0
-elif [ "$NumOfMonitors" -ge 2 ]; then
+elif [ "$NumOfMonitors" -eq 2 ]; then
     MODE=$(echo -e "Single: Choose one Wallpaper\nDual: Choose two Wallpapers" | $MENU)
 elif [ "$NumOfMonitors" -ge 3 ]; then
     MODE=$(echo -e "Single: Choose One Wallpaper\nDual: Choose Two Wallpapers\nTriple: Choose Three Wallpapers" | $MENU)
