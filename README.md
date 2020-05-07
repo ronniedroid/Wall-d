@@ -8,6 +8,7 @@ Features:
 - uses xwallpaper to set the wallpaper.
 - sxiv window centers in the screen when in floating mode, and respects *.forgorund *.background and *.font settings from .Xresources.
 - pywal support
+- betterlockscreen support
 
 Installation:
 
@@ -17,6 +18,7 @@ Install the depencencies:
 - dmenu
 - xwallpaper
 - pywal (optional)
+- betterlockscreen (optional)
 
 Clone the repository
 ```shell
@@ -37,7 +39,9 @@ Usage:
 
 -r restore last set Wallpaper(s)
 
--p Change colorscheme using pywal (Put wal -R in your autostart script to restore last set colorscheme)
+-p change colorscheme using pywal (Put wal -R in your autostart script to restore last set colorscheme)
+
+-b change betterlockscreen background.
 
 to use Wall-d you must define a wallpapers directory useing the `-d` flag.
 
