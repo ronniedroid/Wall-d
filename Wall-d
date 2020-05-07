@@ -16,7 +16,7 @@ Monitor2=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==2
 [ ! -z $Monitor2 ] && Resolution2=$(xrandr --listactivemonitors | grep $Monitor2 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
 Monitor3=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==3) # Select the third monitor for triple mode
 [ ! -z $Monitor3 ] && Resolution3=$(xrandr --listactivemonitors | grep $Monitor3 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
-
+# get number of avilable active monitors
 NumOfMonitors=$(xrandr --listactivemonitors | grep "+" | wc -l)
 # get screen resulotion to calculate the center
 x=$(xrandr | grep "*" | sed 's/x/ /g' | awk -F " " '{print $1}' | sed 's/\ //g')
@@ -27,10 +27,6 @@ location=$(echo 500x500+$xl+$yl)
 # will be set to true when using -p flag to activate pywal
 WithPywall="False"
 WithBetterlockscreen="False"
-
-source ~/.cache/wal/colors.sh
-colorOptions="-nb $color0 -nf $color15 -sb $color1 -sf $color15"
-
 startMessage="Apply wallpaper to lockscreen"
 finishMessage="Finished applying wallpaper to lockscreen"
 
@@ -64,6 +60,14 @@ while getopts :d:rhpb option; do
 done
 
 [ -z "$DIR" ] && usage && exit 0 # if no directory is set, print help message and exit
+
+#  show dmenu in pywal colors only if ran with -p flag
+source ~/.cache/wal/colors.sh
+if [ "$WithPywall" = "True" ]; then
+    colorOptions="-nb $color0 -nf $color15 -sb $color1 -sf $color15"
+else
+    colorOptions=""
+fi
 
 Single(){
 
