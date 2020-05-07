@@ -26,6 +26,7 @@ yl=$(echo "($y-500)/2" | bc)
 location=$(echo 500x500+$xl+$yl)
 # will be set to true when using -p flag to activate pywal
 WithPywall="False"
+# Will be set to True when using -b flag to change betterlockscreen background
 WithBetterlockscreen="False"
 startMessage="Apply wallpaper to lockscreen"
 finishMessage="Finished applying wallpaper to lockscreen"
@@ -44,7 +45,7 @@ usage() {
     echo "-d path/to/your/wallpapers"
     echo "-r restore last set Wallpaper(s)"
     echo "-p Change colorscheme using pywall"
-    echo "-b Change Lockscreen wallpaper too"
+    echo "-b Change Lockscreen wallpaper too (required betterlockscreen"
     echo ""
 }
 
