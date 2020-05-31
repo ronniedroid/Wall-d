@@ -41,9 +41,13 @@ Usage:
 
 -p change colorscheme using pywal (Put wal -R in your autostart script to restore last set colorscheme)
 
--b change betterlockscreen background.
+-b change betterlockscreen wallpaper too.
 
-to use Wall-d you must define a wallpapers directory useing the `-d` flag.
+-l Only change Betterlockscreen wallpaper.
+
+-n Choose a randome wallpaper(s)
+
+to use Wall-d you must define a wallpapers directory using the `-d` flag.
 
 - Select a mode from dmenu and sxiv will open in thumbnail mode. (in case you have only one monitor connected, you will not be prompt to select a mode and sxiv will open directly in single mode)
 - mark the wallpaper you want to set with with m, then press q to quit sxiv. (In single mode, the last marked wallpaper will be used. In dual mode, the last two marked wallpapers will be used. The before-last will be set on Monitor1 and the last will be set on Monitor2 and same with triple mode)

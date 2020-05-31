@@ -26,7 +26,11 @@ yl=$(echo "($y-500)/2" | bc)
 location=$(echo 500x500+$xl+$yl)
 # will be set to true when using -p flag to activate pywal
 WithPywall="False"
-# Will be set to True when using -b flag to change betterlockscreen background
+# will be set to true when using -n flag to activate random photo selection
+randomly="False"
+# Will be set to True when using -b flag to only change betterlockscreen background
+OnlyBetterlockscreen="False"
+# Will be set to True when using -b flag to also change betterlockscreen background
 WithBetterlockscreen="False"
 startMessage="Apply wallpaper to lockscreen"
 finishMessage="Finished applying wallpaper to lockscreen"
@@ -45,16 +49,20 @@ usage() {
     echo "-d path/to/your/wallpapers"
     echo "-r restore last set Wallpaper(s)"
     echo "-p Change colorscheme using pywall"
-    echo "-b Change Lockscreen wallpaper too (required betterlockscreen"
+    echo "-b Change Betterlockscreen wallpaper too"
+    echo "-l Only change Betterlockscreen wallpaper"
+    echo "-n Choose a randome wallpaper(s)"
     echo ""
 }
 
-while getopts :d:rhpb option; do
+while getopts :d:rhpbnl option; do
     case "${option}" in
         d) DIR=${OPTARG};;
         r) restore && exit;;
         p) WithPywall="True" ;;
         b) WithBetterlockscreen="True" ;;
+        l) OnlyBetterlockscreen="True" ;;
+        n) randomly="True" ;;
         h) usage && exit 0 ;;
         *) usage && exit 0
     esac
@@ -70,9 +78,13 @@ else
     colorOptions=""
 fi
 
-Single(){
 
-    walls=$(sxiv -t -o -r -b -g $location $DIR | xargs)  # running sxiv in thumbnail mode.
+Single(){
+    if [ "$randomly" = "True" ]; then
+        walls=$(du -a $DIR | grep 'jpg\|jpeg\|png\|gif' | shuf -n 1 | awk '{print $2}')
+    else
+        walls=$(sxiv -t -o -r -b -g $location $DIR | xargs)  # running sxiv in thumbnail mode.
+    fi
     wall1=$(printf "%s" "$walls" | awk '{w = 1; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the last marked Wallpaper
 
     # if no picture is marked in sxiv, exit.
@@ -83,7 +95,11 @@ Single(){
 
     [ -z "$SingleWallOptions" ] && exit 0
 
-    xwallpaper --$SingleWallOptions $wall1  && sed -i "s|xwallpaper.*|xwallpaper  --$SingleWallOptions $wall1|" $HOME/.local/bin/defaultwallpaper.sh
+    if [ "$OnlyBetterlockscreen" = "True" ]; then
+        betterlockscreen -u $wall1 -r $Resolution1
+    else
+        xwallpaper --$SingleWallOptions $wall1  && sed -i "s|xwallpaper.*|xwallpaper  --$SingleWallOptions $wall1|" $HOME/.local/bin/defaultwallpaper.sh
+    fi
 
     [ "$WithPywall" = "True" ] && wal -i $wall1 -n
 
@@ -96,8 +112,11 @@ Single(){
 
 # to set to diffrent wallpapers on each desktop
 Dual() {
-
-    dwalls=$(sxiv -t -o -r -b -g $location $DIR | xargs)  # running sxiv in thimbnail mode.
+    if [ "$randomly" = "True" ]; then
+        dwalls=$(du -a $DIR | grep 'jpg\|jpeg\|png\|gif' | shuf -n 1 | awk '{print $2}')
+    else
+        dwalls=$(sxiv -t -o -r -b -g $location $DIR | xargs)  # running sxiv in thimbnail mode.
+    fi
     dwallslast2=$(printf "%s" "$dwalls" | awk '{w = 2; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the two last marked Wallpapers
     dwall1=$(printf "%s" "$dwallslast2" | awk '{print $1}')  # Print the path to the before-last marked wallpaper
     dwall2=$(printf "%s" "$dwallslast2" | awk '{print $2}')  # Print the path to the last marked wallpaper
@@ -125,7 +144,11 @@ Dual() {
 
 Triple() {
 
-    twalls=$(sxiv -t -o -r -b -g $location $DIR | xargs)  # running sxiv in thimbnail mode.
+    if [ "$randomly" = "True" ]; then
+        twalls=$(du -a $DIR | grep 'jpg\|jpeg\|png\|gif' | shuf -n 1 | awk '{print $2}')
+    else
+        twalls=$(sxiv -t -o -r -b -g $location $DIR | xargs)  # running sxiv in thimbnail mode.
+    fi
     twallslast3=$(printf "%s" "$twalls" | awk '{w = 3; for (--w; w >=0; w--){printf "%s\t",$(NF-w)}print ""}') # Only print the three last marked Wallpapers
     twall1=$(printf "%s" "$twallslast3" | awk '{print $1}')  # Print the path to the before-before-last marked wallpaper
     twall2=$(printf "%s" "$twallslast3" | awk '{print $2}')  # Print the path to the before-last marked wallpaper
