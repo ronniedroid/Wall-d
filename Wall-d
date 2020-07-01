@@ -9,6 +9,9 @@
 
 
 DIR="" # Path to wallpapers
+defaultwallpaper="$HOME/.local/bin/defaultwallpaper.sh"
+
+[ -f $defaultwallpaper ] && echo "defaultwallpaper.sh exists" || echo xwallpaper >> ~/.local/bin/defaultwallpaper.sh && chmod +x ~/.local/bin/defaultwallpaper.sh
 
 Monitor1=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==1) # Select the first monitor for dual mode
 [ ! -z $Monitor1 ] && Resolution1=$(xrandr --listactivemonitors | grep $Monitor1 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
@@ -34,10 +37,17 @@ OnlyBetterlockscreen="False"
 WithBetterlockscreen="False"
 startMessage="Apply wallpaper to lockscreen"
 finishMessage="Finished applying wallpaper to lockscreen"
+UseFeh="False"
+UseRofi="False"
 
 # function to reset the last set wallpaper(s)
 restore() {
-    defaultwallpaper.sh
+		if [ "$UseFeh" = "True" ];
+		then
+				~/.fehbg &
+		else
+				defaultwallpaper.sh
+		fi
 }
 
 # help message
@@ -52,10 +62,12 @@ usage() {
     echo "-b Change Betterlockscreen wallpaper too"
     echo "-l Only change Betterlockscreen wallpaper"
     echo "-n Choose a randome wallpaper(s)"
+		echo "-f use feh instead of xwallpaper to set and restore the wallpaper"
+		echo "-R use rofi instead of dmenu"
     echo ""
 }
 
-while getopts :d:rhpbnl option; do
+while getopts :d:rhpbnlfR option; do
     case "${option}" in
         d) DIR=${OPTARG};;
         r) restore && exit;;
@@ -64,6 +76,8 @@ while getopts :d:rhpbnl option; do
         l) OnlyBetterlockscreen="True" ;;
         n) randomly="True" ;;
         h) usage && exit 0 ;;
+				f) UseFeh="True" ;;
+				R) UseRofi="True" ;;
         *) usage && exit 0
     esac
 done
@@ -78,7 +92,6 @@ else
     colorOptions=""
 fi
 
-
 Single(){
     if [ "$randomly" = "True" ]; then
         walls=$(du -a $DIR | grep 'jpg\|jpeg\|png\|gif' | shuf -n 1 | awk '{print $2}')
@@ -90,15 +103,34 @@ Single(){
     # if no picture is marked in sxiv, exit.
     [ -z "$walls" ] && exit 0
 
-    SingleWallMenu="dmenu $colorOptions -i -l 5 -p "Options""
-    SingleWallOptions=$(echo -e "zoom\ncenter\ntile\nstretch\nno-randr" | $SingleWallMenu)
+		if [ "$UseRofi" = "True" ] && [ "$UseFeh" = "True" ];
+		then
+				WallMenu="rofi -dmenu -i -l 5 -p "Options""
+				WallOptions=$(echo -e "fill\ncenter\ntile\nscale\nno-xinerama" | $WallMenu)
+		elif [ "$UseRofi" = "True" ] && [ "$UseFeh" = "False" ];
+		then
+				WallMenu="rofi -dmenu -i -l 5 -p "Options""
+				WallOptions=$(echo -e "zoom\ncenter\ntile\nstretch\nno-randr" | $WallMenu)
+		elif [ "$UseRofi" = "False" ] && [ "$UseFeh" = "True" ];
+		then
+				WallMenu="dmenu $colorOptions -i -l 5 -p "Options""
+				WallOptions=$(echo -e "fill\ncenter\ntile\nscale\nno-xinerama" | $WallMenu)
+		else
+				WallMenu="dmenu $colorOptions -i -l 5 -p "Options""
+				WallOptions=$(echo -e "zoom\ncenter\ntile\nstretch\nno-randr" | $WallMenu)
+		fi
 
-    [ -z "$SingleWallOptions" ] && exit 0
+    [ -z "$WallOptions" ] && exit 0
 
     if [ "$OnlyBetterlockscreen" = "True" ]; then
         betterlockscreen -u $wall1 -r $Resolution1
     else
-        xwallpaper --$SingleWallOptions $wall1  && sed -i "s|xwallpaper.*|xwallpaper  --$SingleWallOptions $wall1|" $HOME/.local/bin/defaultwallpaper.sh
+				if [ "$UseFeh" = "True" ];
+				then
+						feh --bg-$WallOptions $wall1
+				else
+						xwallpaper --$WallOptions $wall1  && sed -i "s|xwallpaper.*|xwallpaper  --$WallOptions $wall1|" $HOME/.local/bin/defaultwallpaper.sh
+				fi
     fi
 
     [ "$WithPywall" = "True" ] && wal -i $wall1 -n
@@ -124,16 +156,33 @@ Dual() {
     # if no picture is marked in sxiv, exit.
     [ -z "$dwalls" ] && exit 0
 
-    FirstMonitorMenu="dmenu $colorOptions -i -l 4 -p "First_screen_options""
-    FirstMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $FirstMonitorMenu)
-    SecondMonitorMenu="dmenu $colorOptions -i -l 4 -p "Second_screen_options""
-    SecondMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $SecondMonitorMenu)
+		if [ "$UseRofi" = "True" ] && [ "$UseFeh" = "True" ];
+		then
+				WallMenu="rofi -dmenu -i -l 5 -p "Options""
+				WallOptions=$(echo -e "fill\ncenter\ntile\nscale\nno-xinerama" | $WallMenu)
+		elif [ "$UseRofi" = "True" ] && [ "$UseFeh" = "False" ];
+		then
+				WallMenu="rofi -dmenu -i -l 5 -p "Options""
+				WallOptions=$(echo -e "zoom\ncenter\ntile\nstretch\nno-randr" | $WallMenu)
+		elif [ "$UseRofi" = "False" ] && [ "$UseFeh" = "True" ];
+		then
+				WallMenu="dmenu $colorOptions -i -l 5 -p "Options""
+				WallOptions=$(echo -e "fill\ncenter\ntile\nscale\nno-xinerama" | $WallMenu)
+		else
+				WallMenu="dmenu $colorOptions -i -l 5 -p "Options""
+				WallOptions=$(echo -e "zoom\ncenter\ntile\nstretch\nno-randr" | $WallMenu)
+		fi
 
-    [ -z "$FirstMonitorOptions" ] || [ -z "$SecondMonitorOptions" ] && exit 0
+    [ -z "$WallOptions" ] && exit 0
 
-    xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $dwall1 --output $Monitor2 --$SecondMonitorOptions $dwall2|" $HOME/.local/bin/defaultwallpaper.sh
+		if [ "$UseFeh" = "True" ];
+				then
+						feh --bg-$WallOptions $dwall1 $dwall2
+				else
+						xwallpaper --output $Monitor1 --$WallOptions $dwall1 --output $Monitor2 --$WallOptions $dwall2 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$WallOptions $dwall1 --output $Monitor2 --$WallOptions $dwall2|" $HOME/.local/bin/defaultwallpaper.sh
+		fi
 
-    [ "$WithPywall" = "True" ] wal -i $dwall1 -n
+    [ "$WithPywall" = "True" ] && wal -i $dwall1 -n
 
     if [ "$WithBetterlockscreen" = "True" ]; then
         dunstify "Wall-d" "$startMessage"
@@ -157,16 +206,31 @@ Triple() {
     # if no picture is marked in sxiv, exit.
     [ -z "$twalls" ] && exit 0
 
-    FirstMonitorMenu="dmenu $colorOptions -i -l 4 -p "First_screen_options""
-    FirstMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $FirstMonitorMenu)
-    SecondMonitorMenu="dmenu $colorOptions -i -l 4 -p "Second_screen_options""
-    SecondMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $SecondMonitorMenu)
-    ThirdMonitorMenu="dmenu $colorOptions -i -l 4 -p "Third_screen_options""
-    ThirdMonitorOptions=$(echo -e "zoom\ncenter\ntile\nstretch" | $ThirdMonitorMenu)
+		if [ "$UseRofi" = "True" ] && [ "$UseFeh" = "True" ];
+		then
+				WallMenu="rofi -dmenu -i -l 5 -p "Options""
+				WallOptions=$(echo -e "fill\ncenter\ntile\nscale\nno-xinerama" | $WallMenu)
+		elif [ "$UseRofi" = "True" ] && [ "$UseFeh" = "False" ];
+		then
+				WallMenu="rofi -dmenu -i -l 5 -p "Options""
+				WallOptions=$(echo -e "zoom\ncenter\ntile\nstretch\nno-randr" | $WallMenu)
+		elif [ "$UseRofi" = "False" ] && [ "$UseFeh" = "True" ];
+		then
+				WallMenu="dmenu $colorOptions -i -l 5 -p "Options""
+				WallOptions=$(echo -e "fill\ncenter\ntile\nscale\nno-xinerama" | $WallMenu)
+		else
+				WallMenu="dmenu $colorOptions -i -l 5 -p "Options""
+				WallOptions=$(echo -e "zoom\ncenter\ntile\nstretch\nno-randr" | $WallMenu)
+		fi
 
-    [ -z "$FirstMonitorOptions" ] || [ -z "$SecondMonitorOptions" ] || [ -z "$ThirdMonitorOptions" ] && exit 0
+    [ -z "$WallOptions" ] && exit 0
 
-    xwallpaper --output $Monitor1 --$FirstMonitorOptions $twall1 --output $Monitor2 --$SecondMonitorOptions $twall2 --output $Monitor3 --$ThirdMonitorOptions $twall3 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$FirstMonitorOptions $twall1 --output $Monitor2 --$SecondMonitorOptions $twall2 --output $Monitor3 --$ThirdMonitorOptions $twall3 |" $HOME/.local/bin/defaultwallpaper.sh
+		if [ "$UseFeh" = "True" ];
+				then
+						feh --bg-$WallOptions $dwall1 $dwall2
+				else
+						xwallpaper --output $Monitor1 --$WallOptions $twall1 --output $Monitor2 --$WallOptions $twall2 --output $Monitor3 --$WallOptions $twall3 && sed -i "s|xwallpaper.*|xwallpaper --output $Monitor1 --$WallOptions $twall1 --output $Monitor2 --$WallOptions $twall2 --output $Monitor3 --$WallOptions $twall3 |" $HOME/.local/bin/defaultwallpaper.sh
+		fi
 
     [ "$WithPywall" = "True" ] && wal -i $twall2 -n
 
@@ -177,7 +241,12 @@ Triple() {
     fi
 }
 
-MENU="dmenu $colorOptions -l 3 -p "Mode?""
+if [ "$UseRofi" = "True" ];
+then
+		MENU="rofi -dmenu -l 3 -p "Mode?""
+else
+		MENU="dmenu $colorOptions -l 3 -p "Mode?""
+fi
 
 if [ "$NumOfMonitors" -eq 1 ]; then
     Single && exit 0

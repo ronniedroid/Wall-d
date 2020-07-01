@@ -2,13 +2,12 @@
 
 OUTDIR="$HOME/.local/bin/"
 state1=$(ls -1 "$OUTDIR" | grep -E "Wall-d")
-state2=$(ls -1 "$OUTDIR" | grep -E "defaultwallpaper.sh")
 CurrentDIR=$(pwd)
-PCurrentDir=$(echo "$Current")
+PCurrentDir=$(echo "$CurrentDIR")
 
-[ -n "$state1" ] || [ -n "$state2" ] && rm "$OUTDIR"Wall-d && rm "$OUTDIR"defaultwallpaper.sh
+[ -n "$state1" ] && rm "$OUTDIR"Wall-d
 
-cp "$PCurrentDir"Wall-d "$OUTDIR" ; cp "$PCurrentDir"defaultwallpaper.sh "$OUTDIR"
+cp "$PCurrentDir"/Wall-d "$OUTDIR"
 
 
 
