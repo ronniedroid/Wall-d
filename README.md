@@ -1,4 +1,4 @@
-# Wall-d
+# wall-d
 
 A simple and fast wallpaper manager for x
 

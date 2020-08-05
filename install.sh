@@ -1,13 +1,14 @@
 #!/bin/bash
 
 OUTDIR="$HOME/.local/bin/"
-state1=$(ls -1 "$OUTDIR" | grep -E "Wall-d")
+[ -e "$OUTDIR" ] || mkdir -p $OUTDIR
+state1=$(ls -1 "$OUTDIR" | grep -E "wall-d")
 CurrentDIR=$(pwd)
 PCurrentDir=$(echo "$CurrentDIR")
 
-[ -n "$state1" ] && rm "$OUTDIR"Wall-d
+[ -n "$state1" ] && rm "$OUTDIR"wall-d
 
-cp "$PCurrentDir"/Wall-d "$OUTDIR"
+cp "$PCurrentDir"/wall-d "$OUTDIR"
 
 
 
