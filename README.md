@@ -2,6 +2,8 @@
 
 A simple and fast wallpaper manager for x
 
+![Wall-d sxiv window](Wall-d.png)
+
 Features:
 
 - It supports single (same wall on all available screens), dual and triple (different walls on each monitor)
