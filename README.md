@@ -66,7 +66,7 @@ to use Wall-d you must define a wallpapers directory using the `-d` flag.
 - select an option from the menu.
 - done
 
-to restore your last set wallpaper(s) use the `-r` falg. put `Wall-d -r` in your autostart script. If you run `Wall-d` with the `-f` flag, then you should put `Wall-d -f -r` in your autostart script.
+to restore your last set wallpaper(s) use the `-r` flag. put `Wall-d -r` in your autostart script. If you run `Wall-d` with the `-f` flag, then you should put `Wall-d -f -r` in your autostart script.
 
 sxiv usage:
 
