@@ -77,4 +77,4 @@ sxiv usage:
 - f: toggle fullscreen mode.
 - q: to exit.
 
-If anyone has suggestions or can contribute to make the script even better, you are welcome to give your feedback or send a pole request.
+If anyone has suggestions or can contribute to make the script even better, you are welcome to give your feedback or send a pull request.
