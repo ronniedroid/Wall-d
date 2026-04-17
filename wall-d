@@ -11,19 +11,22 @@
 DIR="" # Path to wallpapers directory
 defaultwallpaper="$HOME/.local/bin/defaultwallpaper.sh"
 
-[ -f $defaultwallpaper ] && echo "defaultwallpaper.sh exists" || echo xwallpaper >> ~/.local/bin/defaultwallpaper.sh && chmod +x ~/.local/bin/defaultwallpaper.sh
+XRANDR_ACTIVEMONITORS=$(xrandr --listactivemonitors)
+XRANDR_CURRENT=$(xrandr --current)
 
-Monitor1=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==1) # Select the first monitor for dual mode
-[ ! -z $Monitor1 ] && Resolution1=$(xrandr --listactivemonitors | grep $Monitor1 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
-Monitor2=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==2) # Select the second monitor for dual mode
-[ ! -z $Monitor2 ] && Resolution2=$(xrandr --listactivemonitors | grep $Monitor2 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
-Monitor3=$(xrandr --listactivemonitors | grep "+" | awk '{print $4}' | awk NR==3) # Select the third monitor for triple mode
-[ ! -z $Monitor3 ] && Resolution3=$(xrandr --listactivemonitors | grep $Monitor3 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
+[ -f $defaultwallpaper ] && echo "defaultwallpaper.sh exists" || echo xwallpaper >>~/.local/bin/defaultwallpaper.sh && chmod +x ~/.local/bin/defaultwallpaper.sh
+
+Monitor1=$(echo "$XRANDR_ACTIVEMONITORS" | grep "+" | awk '{print $4}' | awk NR==1) # Select the first monitor for dual mode
+[ ! -z $Monitor1 ] && Resolution1=$(echo "$XRANDR_ACTIVEMONITORS" | grep $Monitor1 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
+Monitor2=$(echo "$XRANDR_ACTIVEMONITORS" | grep "+" | awk '{print $4}' | awk NR==2) # Select the second monitor for dual mode
+[ ! -z $Monitor2 ] && Resolution2=$(echo "$XRANDR_ACTIVEMONITORS" | grep $Monitor2 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
+Monitor3=$(echo "$XRANDR_ACTIVEMONITORS" | grep "+" | awk '{print $4}' | awk NR==3) # Select the third monitor for triple mode
+[ ! -z $Monitor3 ] && Resolution3=$(echo "$XRANDR_ACTIVEMONITORS" | grep $Monitor3 | sed 's/[\/x]/ /g' | awk '{print $3 "x" $5}')
 # get number of avilable active monitors
-NumOfMonitors=$(xrandr --listactivemonitors | grep "+" | wc -l)
+NumOfMonitors=$(echo "$XRANDR_ACTIVEMONITORS" | grep "+" | wc -l)
 # get screen resulotion to calculate the center
-x=$(xrandr | grep "*" | sed 's/x/ /g' | awk -F " " '{print $1}' | sed 's/\ //g')
-y=$(xrandr | grep "*" | sed 's/x/ /g' | awk -F " " '{print $2}' | sed 's/\ //g')
+x=$(echo "$XRANDR_CURRENT" | grep "*" | sed 's/x/ /g' | awk -F " " '{print $1}' | sed 's/\ //g' | head -n1)
+y=$(echo "$XRANDR_CURRENT" | grep "*" | sed 's/x/ /g' | awk -F " " '{print $2}' | sed 's/\ //g' | head -n1)
 xl=$(echo "($x-500)/2" | bc)
 yl=$(echo "($y-500)/2" | bc)
 location=$(echo 500x500+$xl+$yl)
